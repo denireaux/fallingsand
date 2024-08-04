@@ -10,7 +10,6 @@ namespace FallingSand
     {
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
-
         public const int gridWidth = 800;
         public const int gridHeight = 600;
         const int cellSize = 2;
@@ -28,7 +27,7 @@ namespace FallingSand
         Color wetSandColor = new Color(139, 69, 19); // Brown
         Color fireColor = Color.Red;
         Color lavaColor = Color.Orange;
-        Color stoneColor = new Color(82, 38, 32); // Maroonish
+        Color stoneColor = new Color(191, 191, 191); // Ashy
 
         public Game1()
         {
@@ -61,9 +60,7 @@ namespace FallingSand
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
             // Load the font for labels
-            font = Content.Load<SpriteFont>("DefaultFont"); // Ensure you have this font file in your Content
-
-            // Other content loading code...
+            font = Content.Load<SpriteFont>("DefaultFont");
         }
 
         protected override void Update(GameTime gameTime)
@@ -189,6 +186,7 @@ namespace FallingSand
                     if (grid[x, y] != null)
                     {
                         Color particleColor;
+                        int particleSize = cellSize;
 
                         if (grid[x, y] is SandParticle)
                         {
@@ -198,10 +196,14 @@ namespace FallingSand
                         {
                             particleColor = waterColor;
                         }
+
+                        // Wet sand has a large particle size to simulate 'clumping'
                         else if (grid[x, y] is WetSandParticle)
                         {
                             particleColor = wetSandColor;
+                            particleSize = cellSize * 2;
                         }
+
                         else if (grid[x, y] is FireParticle)
                         {
                             particleColor = fireColor;
@@ -212,18 +214,18 @@ namespace FallingSand
                         }
                         else if (grid[x, y] is StoneParticle)
                         {
-                            particleColor = stoneColor; // Gray color for stone
+                            particleColor = stoneColor;
                         }
                         else if (grid[x, y] is SmokeParticle)
                         {
-                            particleColor = Color.Gray; // Gray color for smoke
+                            particleColor = Color.Gray;
                         }
                         else
                         {
-                            particleColor = Color.White; // Default color, in case you add other particles
+                            particleColor = Color.White;
                         }
 
-                        _spriteBatch.Draw(pixel, new Rectangle(x * cellSize, y * cellSize, cellSize, cellSize), particleColor);
+                        _spriteBatch.Draw(pixel, new Rectangle(x * cellSize, y * cellSize, particleSize, particleSize), particleColor);
                     }
                 }
             }
