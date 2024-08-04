@@ -16,18 +16,19 @@ namespace FallingSand
         const int cellSize = 2;
         Particle[,] grid = new Particle[gridWidth, gridHeight]; // Unified grid for all particles
         Texture2D pixel;
-        SpriteFont font;
+        SpriteFont font; // SpriteFont for text labels
         const float gravity = 0.1f;
         Random rand = new Random();
         string currentParticleType = "Sand"; // Default particle type
 
         // Define palette area
-        Rectangle sandButton, waterButton, wetSandButton, fireButton, lavaButton;
+        Rectangle sandButton, waterButton, wetSandButton, fireButton, lavaButton, stoneButton;
         Color sandColor = Color.Yellow;
         Color waterColor = Color.Blue;
         Color wetSandColor = new Color(139, 69, 19); // Brown
         Color fireColor = Color.Red;
         Color lavaColor = Color.Orange;
+        Color stoneColor = new Color(82, 38, 32); // Maroonish
 
         public Game1()
         {
@@ -35,7 +36,7 @@ namespace FallingSand
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
             _graphics.PreferredBackBufferWidth = gridWidth * cellSize;
-            _graphics.PreferredBackBufferHeight = gridHeight * cellSize + 50; // Extra space for palette
+            _graphics.PreferredBackBufferHeight = gridHeight * cellSize + 80; // Extra space for palette and labels
         }
 
         protected override void Initialize()
@@ -44,12 +45,13 @@ namespace FallingSand
             pixel = new Texture2D(GraphicsDevice, 1, 1);
             pixel.SetData(new[] { Color.White });
 
-            // Initialize palette buttons
+            // Initialize palette buttons -> Rectangle(X-Coordinate, Y-Coordinate)
             sandButton = new Rectangle(10, gridHeight * cellSize + 10, 50, 30);
-            waterButton = new Rectangle(70, gridHeight * cellSize + 10, 50, 30);
-            wetSandButton = new Rectangle(130, gridHeight * cellSize + 10, 50, 30);
-            fireButton = new Rectangle(190, gridHeight * cellSize + 10, 50, 30);
-            lavaButton = new Rectangle(250, gridHeight * cellSize + 10, 50, 30);
+            waterButton = new Rectangle(110, gridHeight * cellSize + 10, 50, 30);
+            wetSandButton = new Rectangle(210, gridHeight * cellSize + 10, 50, 30);
+            fireButton = new Rectangle(310, gridHeight * cellSize + 10, 50, 30);
+            lavaButton = new Rectangle(410, gridHeight * cellSize + 10, 50, 30);
+            stoneButton = new Rectangle(510, gridHeight * cellSize + 10, 50, 30);
 
             base.Initialize();
         }
@@ -58,16 +60,10 @@ namespace FallingSand
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            try
-            {
-                // Attempt to load the font
-                font = Content.Load<SpriteFont>("DefaultFont");
-            }
-            catch (Exception)
-            {
-                // Handle the case where the font is not found
-                font = null; // or set to a fallback or default behavior
-            }
+            // Load the font for labels
+            font = Content.Load<SpriteFont>("DefaultFont"); // Ensure you have this font file in your Content
+
+            // Other content loading code...
         }
 
         protected override void Update(GameTime gameTime)
@@ -98,6 +94,10 @@ namespace FallingSand
                 else if (lavaButton.Contains(mouseState.Position))
                 {
                     currentParticleType = "Lava";
+                }
+                else if (stoneButton.Contains(mouseState.Position))
+                {
+                    currentParticleType = "Stone";
                 }
                 else
                 {
@@ -136,6 +136,10 @@ namespace FallingSand
                                 else if (currentParticleType == "Lava")
                                 {
                                     grid[particleX, particleY] = new LavaParticle(particleX, particleY);
+                                }
+                                else if (currentParticleType == "Stone")
+                                {
+                                    grid[particleX, particleY] = new StoneParticle(particleX, particleY);
                                 }
                             }
                         }
@@ -208,7 +212,7 @@ namespace FallingSand
                         }
                         else if (grid[x, y] is StoneParticle)
                         {
-                            particleColor = Color.Gray; // Gray color for stone
+                            particleColor = stoneColor; // Gray color for stone
                         }
                         else if (grid[x, y] is SmokeParticle)
                         {
@@ -230,15 +234,17 @@ namespace FallingSand
             _spriteBatch.Draw(pixel, wetSandButton, wetSandColor);
             _spriteBatch.Draw(pixel, fireButton, fireColor);
             _spriteBatch.Draw(pixel, lavaButton, lavaColor);
+            _spriteBatch.Draw(pixel, stoneButton, stoneColor);
 
-            // Draw labels for each button (optional, requires a SpriteFont)
+            // Draw the labels under each button using SpriteBatch.DrawString
             if (font != null)
             {
-                _spriteBatch.DrawString(font, "Sand", new Vector2(10, gridHeight * cellSize + 10), Color.White);
-                _spriteBatch.DrawString(font, "Water", new Vector2(70, gridHeight * cellSize + 10), Color.White);
-                _spriteBatch.DrawString(font, "Wet Sand", new Vector2(130, gridHeight * cellSize + 10), Color.White);
-                _spriteBatch.DrawString(font, "Fire", new Vector2(190, gridHeight * cellSize + 10), Color.White);
-                _spriteBatch.DrawString(font, "Lava", new Vector2(250, gridHeight * cellSize + 10), Color.White);
+                _spriteBatch.DrawString(font, "Sand", new Vector2(sandButton.X, sandButton.Y + sandButton.Height + 5), Color.White);
+                _spriteBatch.DrawString(font, "Water", new Vector2(waterButton.X, waterButton.Y + waterButton.Height + 5), Color.White);
+                _spriteBatch.DrawString(font, "Wet Sand", new Vector2(wetSandButton.X, wetSandButton.Y + wetSandButton.Height + 5), Color.White);
+                _spriteBatch.DrawString(font, "Fire", new Vector2(fireButton.X, fireButton.Y + fireButton.Height + 5), Color.White);
+                _spriteBatch.DrawString(font, "Lava", new Vector2(lavaButton.X, lavaButton.Y + lavaButton.Height + 5), Color.White);
+                _spriteBatch.DrawString(font, "Stone", new Vector2(stoneButton.X, stoneButton.Y + stoneButton.Height + 5), Color.White);
             }
 
             _spriteBatch.End();

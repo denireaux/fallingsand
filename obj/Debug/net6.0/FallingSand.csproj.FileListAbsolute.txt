@@ -23,3 +23,5 @@ C:\Users\dange\projects\FallingSand\FallingSand\obj\Debug\net6.0\refint\FallingS
 C:\Users\dange\projects\FallingSand\FallingSand\obj\Debug\net6.0\FallingSand.pdb
 C:\Users\dange\projects\FallingSand\FallingSand\obj\Debug\net6.0\FallingSand.genruntimeconfig.cache
 C:\Users\dange\projects\FallingSand\FallingSand\obj\Debug\net6.0\ref\FallingSand.dll
+c:\Users\dange\projects\FallingSand\FallingSand\obj\Debug\net6.0\FallingSand.sourcelink.json
+c:\Users\dange\projects\FallingSand\FallingSand\bin\Debug\net6.0\Content\DefaultFont.xnb
