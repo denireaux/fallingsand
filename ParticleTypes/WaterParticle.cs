@@ -54,7 +54,8 @@ namespace FallingSand.ParticleTypes
                 // If the below space is a FireParticle, emit SmokeParticle and delete WaterParticle
                 else if (grid[X, newY] is FireParticle)
                 {
-                    grid[X, Y] = new SmokeParticle(X, Y);
+                    for (int index = 0; index < 1000; index++) { grid[X, Y] = new SmokeParticle(X, Y); }
+                    
                     grid[X, Y] = null;
                 }
 
@@ -110,24 +111,18 @@ namespace FallingSand.ParticleTypes
         // Check if there is a FireParticle Left, Right, Above, or Below
         private bool IsFireNearby(Particle[,] grid)
         {
-            for (int dx = -1; dx <= 1; dx++)
-            {
-                for (int dy = -1; dy <= 1; dy++)
-                {
-                    if (dx == 0 && dy == 0) continue; // Skip the current particle's position
-                    int checkX = X + dx;
-                    int checkY = Y + dy;
+            Particle[] particlesNear = GetSurroundingParticles(grid);
+            bool fireNearby = false;
 
-                    if (checkX >= 0 && checkX < Game1.gridWidth && checkY >= 0 && checkY < Game1.gridHeight)
-                    {
-                        if (grid[checkX, checkY] is FireParticle)
-                        {
-                            return true;
-                        }
-                    }
+            foreach (Particle particle in particlesNear)
+            {
+                if (particle != null && particle.isHot) 
+                {
+                    fireNearby = true;
+                    return fireNearby;
                 }
             }
-            return false;
+            return fireNearby;
         }
     }
 }

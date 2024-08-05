@@ -11,6 +11,7 @@ namespace FallingSand.ParticleTypes
         {
             lifetime = 100; // Fire particles last for a limited time
             Velocity = -0.2f; // Fire particles rise slightly
+            isHot = true;
         }
 
         public override void Update(float gravity, Particle[,] grid)

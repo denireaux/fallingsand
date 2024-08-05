@@ -16,7 +16,7 @@ namespace FallingSand
         Particle[,] grid = new Particle[gridWidth, gridHeight]; // Unified grid for all particles
         Texture2D pixel;
         SpriteFont font; // SpriteFont for text labels
-        const float gravity = 0.1f;
+        const float gravity = 0.8f;
         Random rand = new Random();
         string currentParticleType = "Sand"; // Default particle type
 
@@ -24,9 +24,9 @@ namespace FallingSand
         Rectangle sandButton, waterButton, wetSandButton, fireButton, lavaButton, stoneButton;
         Color sandColor = Color.Yellow;
         Color waterColor = Color.Blue;
-        Color wetSandColor = new Color(139, 69, 19); // Brown
+        Color wetSandColor = new Color(169, 132, 46); // Brown
         Color fireColor = Color.Red;
-        Color lavaColor = Color.Orange;
+        Color lavaColor = new Color(253, 83, 21);
         Color stoneColor = new Color(191, 191, 191); // Ashy
 
         public Game1()

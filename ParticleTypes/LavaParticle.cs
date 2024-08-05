@@ -12,6 +12,7 @@ namespace FallingSand.ParticleTypes
         {
             Velocity = 0.05f; // Slower velocity to simulate viscosity
             delayCounter = 0;
+            isHot = true;
         }
 
         public override void Update(float gravity, Particle[,] grid)
