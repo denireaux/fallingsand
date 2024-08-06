@@ -15,20 +15,13 @@ namespace FallingSand.ParticleTypes
         {
             Velocity += gravity * 0.5f;
             int newY = (int)(Y + Velocity);
-            int oldY = (int)(Y - Velocity); // Trying to figure out how to get an above tile
+            int oldY = (int)(Y - Velocity);
 
             if (newY >= Game1.gridHeight)
                 newY = Game1.gridHeight - 1;
 
-            // Check all surrounding spaces for FireParticle
-            bool fireNearby = IsFireNearby(grid);
-
-            if (fireNearby)
-            {
-                // Emit SmokeParticle and delete WaterParticle
-                grid[X, Y] = new SmokeParticle(X, Y);
-                return; // Exit early since the WaterParticle is deleted
-            }
+            // Check all surrounding spaces for particle.isHot == true, and convert water to smoke if so
+            MakeSmokeIfHot(grid);
 
             // The below logic is necessary for water's interactions with other particles
             // Note that grid[X, Y] is reference to the existing water particle
@@ -109,20 +102,14 @@ namespace FallingSand.ParticleTypes
         }
 
         // Check if there is a FireParticle Left, Right, Above, or Below
-        private bool IsFireNearby(Particle[,] grid)
+        private void MakeSmokeIfHot(Particle[,] grid)
         {
             Particle[] particlesNear = GetSurroundingParticles(grid);
-            bool fireNearby = false;
 
             foreach (Particle particle in particlesNear)
             {
-                if (particle != null && particle.isHot) 
-                {
-                    fireNearby = true;
-                    return fireNearby;
-                }
+                if (particle != null && particle.isHot) { grid[X, Y] = new SmokeParticle(X, Y); }
             }
-            return fireNearby;
         }
     }
 }
