@@ -7,6 +7,7 @@ namespace FallingSand.ParticleTypes
     {
         private int delayCounter;
         private static readonly int maxDelay = 2; // Control how often the lava moves (higher = slower movement)
+        private static readonly Random rand = new Random(); // Static Random instance for performance
 
         public LavaParticle(int x, int y) : base(x, y)
         {
@@ -24,11 +25,7 @@ namespace FallingSand.ParticleTypes
             if (CheckAndHandleWaterInteraction(grid, X, Y + 1) || // Below
                 CheckAndHandleWaterInteraction(grid, X, Y - 1) || // Above
                 CheckAndHandleWaterInteraction(grid, X + 1, Y) || // Right
-                CheckAndHandleWaterInteraction(grid, X - 1, Y) || // Left
-                CheckAndHandleWaterInteraction(grid, X + 1, Y + 1) || // Bottom right diagonal
-                CheckAndHandleWaterInteraction(grid, X - 1, Y + 1) || // Bottom left diagonal
-                CheckAndHandleWaterInteraction(grid, X + 1, Y - 1) || // Top right diagonal
-                CheckAndHandleWaterInteraction(grid, X - 1, Y - 1))   // Top left diagonal
+                CheckAndHandleWaterInteraction(grid, X - 1, Y))   // Left
             {
                 return; // If interaction occurred, stop further processing
             }
@@ -55,10 +52,17 @@ namespace FallingSand.ParticleTypes
                 Y = newY;
                 grid[X, Y] = this;
             }
+            else if (newY < Game1.gridHeight && grid[X, newY] is WaterParticle)
+            {
+                // If there's a water particle below, swap positions to simulate sinking
+                grid[X, Y] = grid[X, newY]; // Move the water particle up
+                grid[X, Y].Y = Y;
+                Y = newY;
+                grid[X, newY] = this; // Move the lava particle down
+            }
             else
             {
                 // Try sliding sideways with a lower probability
-                Random rand = new Random();
                 int direction = rand.Next(0, 3) - 1; // -1, 0, or 1 (0 is no movement)
 
                 // Check if the sideways move is within bounds and if the space is empty
@@ -70,6 +74,16 @@ namespace FallingSand.ParticleTypes
                         X += direction;
                         Y += 1;
                         grid[X, Y] = this;
+                    }
+                    else if (grid[X + direction, Y + 1] is WaterParticle)
+                    {
+                        // Swap positions with the water particle
+                        grid[X, Y] = grid[X + direction, Y + 1]; // Move the water particle up
+                        grid[X, Y].X = X;
+                        grid[X, Y].Y = Y;
+                        X += direction;
+                        Y += 1;
+                        grid[X, Y] = this; // Move the lava particle down
                     }
                 }
             }

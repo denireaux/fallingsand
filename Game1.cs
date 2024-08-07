@@ -21,7 +21,7 @@ namespace FallingSand
         string currentParticleType = "Sand"; // Default particle type
 
         // Define palette area
-        Rectangle sandButton, waterButton, wetSandButton, fireButton, lavaButton, stoneButton, smokeButton;
+        Rectangle sandButton, waterButton, wetSandButton, fireButton, lavaButton, stoneButton, smokeButton, soilButton, heaterButton;
         Color sandColor = Color.Yellow;
         Color waterColor = Color.Blue;
         Color wetSandColor = new Color(169, 132, 46); // Brown
@@ -29,6 +29,8 @@ namespace FallingSand
         Color lavaColor = new Color(253, 83, 21);
         Color stoneColor = new Color(191, 191, 191); // Ashy
         Color smokeColor = Color.Gray;
+        Color soilColor = new Color(62, 49, 23); // Dark Brown
+        Color heaterColor = new Color(255, 165, 0); // Orange
 
         public Game1()
         {
@@ -52,8 +54,9 @@ namespace FallingSand
             fireButton = new Rectangle(310, gridHeight * cellSize + 10, 50, 30);
             lavaButton = new Rectangle(410, gridHeight * cellSize + 10, 50, 30);
             stoneButton = new Rectangle(510, gridHeight * cellSize + 10, 50, 30);
-            smokeButton = new Rectangle(620, gridHeight * cellSize + 10, 50, 30);
-
+            smokeButton = new Rectangle(610, gridHeight * cellSize + 10, 50, 30);
+            soilButton = new Rectangle(710, gridHeight * cellSize + 10, 50, 30);
+            heaterButton = new Rectangle(810, gridHeight * cellSize + 10, 50, 30);
 
             base.Initialize();
         }
@@ -103,51 +106,67 @@ namespace FallingSand
                 {
                     currentParticleType = "Smoke";
                 }
+                else if (soilButton.Contains(mouseState.Position))
+                {
+                    currentParticleType = "Soil";
+                }
+                else if (heaterButton.Contains(mouseState.Position))
+                {
+                    currentParticleType = "Heater";
+                }
                 else
                 {
                     // Handle dropping multiple particles into the grid
                     int mouseX = mouseState.X / cellSize;
                     int mouseY = mouseState.Y / cellSize;
 
-                    for (int i = 0; i < 40; i++)
+                    for (int offsetX = -5; offsetX <= 5; offsetX++)
                     {
-                        int offsetX = rand.Next(-5, 6);
-                        int offsetY = rand.Next(-5, 6);
-
-                        int particleX = mouseX + offsetX;
-                        int particleY = mouseY + offsetY;
-
-                        if (particleX >= 0 && particleX < gridWidth && particleY >= 0 && particleY < gridHeight)
+                        for (int offsetY = -5; offsetY <= 5; offsetY++)
                         {
-                            if (grid[particleX, particleY] == null)
+                            int particleX = mouseX + offsetX;
+                            int particleY = mouseY + offsetY;
+
+                            if (particleX >= 0 && particleX < gridWidth && particleY >= 0 && particleY < gridHeight)
                             {
-                                if (currentParticleType == "Sand")
+                                if (grid[particleX, particleY] == null)
                                 {
-                                    grid[particleX, particleY] = new SandParticle(particleX, particleY);
-                                }
-                                else if (currentParticleType == "Water")
-                                {
-                                    grid[particleX, particleY] = new WaterParticle(particleX, particleY);
-                                }
-                                else if (currentParticleType == "WetSand")
-                                {
-                                    grid[particleX, particleY] = new WetSandParticle(particleX, particleY);
-                                }
-                                else if (currentParticleType == "Fire")
-                                {
-                                    grid[particleX, particleY] = new FireParticle(particleX, particleY);
-                                }
-                                else if (currentParticleType == "Lava")
-                                {
-                                    grid[particleX, particleY] = new LavaParticle(particleX, particleY);
-                                }
-                                else if (currentParticleType == "Stone")
-                                {
-                                    grid[particleX, particleY] = new StoneParticle(particleX, particleY);
-                                }
-                                else if (currentParticleType == "Smoke")
-                                {
-                                    grid[particleX, particleY] = new SmokeParticle(particleX, particleY);
+                                    if (currentParticleType == "Sand")
+                                    {
+                                        grid[particleX, particleY] = new SandParticle(particleX, particleY);
+                                    }
+                                    else if (currentParticleType == "Water")
+                                    {
+                                        grid[particleX, particleY] = new WaterParticle(particleX, particleY);
+                                    }
+                                    else if (currentParticleType == "WetSand")
+                                    {
+                                        grid[particleX, particleY] = new WetSandParticle(particleX, particleY);
+                                    }
+                                    else if (currentParticleType == "Fire")
+                                    {
+                                        grid[particleX, particleY] = new FireParticle(particleX, particleY);
+                                    }
+                                    else if (currentParticleType == "Lava")
+                                    {
+                                        grid[particleX, particleY] = new LavaParticle(particleX, particleY);
+                                    }
+                                    else if (currentParticleType == "Stone")
+                                    {
+                                        grid[particleX, particleY] = new StoneParticle(particleX, particleY);
+                                    }
+                                    else if (currentParticleType == "Smoke")
+                                    {
+                                        grid[particleX, particleY] = new SmokeParticle(particleX, particleY);
+                                    }
+                                    else if (currentParticleType == "Soil")
+                                    {
+                                        grid[particleX, particleY] = new SoilParticle(particleX, particleY);
+                                    }
+                                    else if (currentParticleType == "Heater")
+                                    {
+                                        grid[particleX, particleY] = new HeaterParticle(particleX, particleY);
+                                    }
                                 }
                             }
                         }
@@ -192,13 +211,12 @@ namespace FallingSand
             }
 
             base.Update(gameTime);
-
         }
-
 
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.Black);
+            Color backgroundColor = new Color(0, 0, 0);
+            GraphicsDevice.Clear(backgroundColor);
 
             _spriteBatch.Begin();
 
@@ -242,8 +260,17 @@ namespace FallingSand
                         }
                         else if (grid[x, y] is SmokeParticle)
                         {
-                            particleColor = Color.Gray;
+                            particleColor = smokeColor;
                             particleSize = cellSize * 2;
+                        }
+                        else if (grid[x, y] is SoilParticle)
+                        {
+                            particleColor = soilColor;
+                            particleSize = cellSize * 2;
+                        }
+                        else if (grid[x, y] is HeaterParticle)
+                        {
+                            particleColor = heaterColor;
                         }
                         else
                         {
@@ -263,6 +290,8 @@ namespace FallingSand
             _spriteBatch.Draw(pixel, lavaButton, lavaColor);
             _spriteBatch.Draw(pixel, stoneButton, stoneColor);
             _spriteBatch.Draw(pixel, smokeButton, smokeColor);
+            _spriteBatch.Draw(pixel, soilButton, soilColor);
+            _spriteBatch.Draw(pixel, heaterButton, heaterColor);
 
             // Draw the labels under each button using SpriteBatch.DrawString
             if (font != null)
@@ -274,6 +303,8 @@ namespace FallingSand
                 _spriteBatch.DrawString(font, "Lava", new Vector2(lavaButton.X, lavaButton.Y + lavaButton.Height + 5), Color.White);
                 _spriteBatch.DrawString(font, "Stone", new Vector2(stoneButton.X, stoneButton.Y + stoneButton.Height + 5), Color.White);
                 _spriteBatch.DrawString(font, "Smoke", new Vector2(smokeButton.X, smokeButton.Y + smokeButton.Height + 5), Color.White);
+                _spriteBatch.DrawString(font, "Soil", new Vector2(soilButton.X, soilButton.Y + soilButton.Height + 5), Color.White);
+                _spriteBatch.DrawString(font, "Heater", new Vector2(heaterButton.X, heaterButton.Y + heaterButton.Height + 5), Color.White);
             }
 
             _spriteBatch.End();

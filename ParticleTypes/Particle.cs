@@ -26,12 +26,5 @@ namespace FallingSand.ParticleTypes
 
             return new Particle[] { left, right, above, below };
         }
-/* 
-        public bool IsInactive()
-        {
-            // A particle is considered inactive if it reaches the top or bottom of the grid
-            // or if it is stuck and not moving (optional condition).
-            return Y == 0 || Y >= Game1.gridHeight;
-        } */
     }
 }

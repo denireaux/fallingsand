@@ -111,8 +111,6 @@ namespace FallingSand.ParticleTypes
         private void MakeSmoke(Particle[,] grid)
         {
             grid[X, Y] = new SmokeParticle(X, Y);
-            Thread.Sleep(1);
-            grid[X, Y] = new SmokeParticle(X, Y);
         }
 
         // Move the particle to a new location

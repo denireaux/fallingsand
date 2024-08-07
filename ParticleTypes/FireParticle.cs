@@ -35,7 +35,7 @@ namespace FallingSand.ParticleTypes
             // Check if fire comes into contact with water
             if (Y + 1 < Game1.gridHeight && (grid[X, Y + 1] is WaterParticle || (newY >= 0 && grid[X, newY] is WaterParticle)))
             {
-                // Emit multiple smoke particles and remove both fire and water particles
+                // Remove both fire and water particles
                 EmitSmokeParticles(grid, X, Y + 1);
                 grid[X, Y] = null;
                 return;
@@ -65,22 +65,22 @@ namespace FallingSand.ParticleTypes
         private void EmitSmokeParticles(Particle[,] grid, int x, int y)
         {
             Random rand = new Random();
-            for (int i = 0; i < 10; i++) // Emit 10 smoke particles
+
+            
+            int offsetX = rand.Next(-2, 3); // Random offset to spread smoke
+            int offsetY = rand.Next(-2, 3); // Random offset to spread smoke
+
+            int smokeX = x + offsetX;
+            int smokeY = y + offsetY;
+
+            if (smokeX >= 0 && smokeX < Game1.gridWidth && smokeY >= 0 && smokeY < Game1.gridHeight)
             {
-                int offsetX = rand.Next(-2, 3); // Random offset to spread smoke
-                int offsetY = rand.Next(-2, 3); // Random offset to spread smoke
-
-                int smokeX = x + offsetX;
-                int smokeY = y + offsetY;
-
-                if (smokeX >= 0 && smokeX < Game1.gridWidth && smokeY >= 0 && smokeY < Game1.gridHeight)
+                if (grid[smokeX, smokeY] == null)
                 {
-                    if (grid[smokeX, smokeY] == null)
-                    {
-                        grid[smokeX, smokeY] = new SmokeParticle(smokeX, smokeY);
-                    }
+                    grid[smokeX, smokeY] = new SmokeParticle(smokeX, smokeY);
                 }
             }
+            
         }
     }
 }
