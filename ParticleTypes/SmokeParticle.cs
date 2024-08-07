@@ -1,11 +1,20 @@
 using Microsoft.Xna.Framework;
 using System;
+using System.Data;
+using System.Xml.Schema;
 
 namespace FallingSand.ParticleTypes
 {
     public class SmokeParticle : Particle
     {
-        private float energyLossFactor = 0.8f; // Factor by which velocity is reduced upon bouncing
+        // Factor by which velocity is reduced upon bouncing
+        private float energyLossFactor = 0.8f; 
+
+        // Flag indicating whether altitude is high enough for the SmokeParticle to 'condense' into a WaterParticle
+        private bool canCondense;
+
+        // Flag indicating whether condensation should occur or not
+        private bool willCondense;
 
         public SmokeParticle(int x, int y) : base(x, y)
         {
@@ -14,6 +23,15 @@ namespace FallingSand.ParticleTypes
 
         public override void Update(float gravity, Particle[,] grid)
         {
+            // Check altitude
+            canCondense = CheckAltitude();
+
+            // Check if the SmokeParticle will 'condense' into a WaterParticle
+            willCondense = RainFactor();
+
+            // Make WaterParticle if altitude is high enough, and RainFactor is true
+            if (canCondense && willCondense) { MakeWater(grid); return; }
+
             // Apply the velocity to move the smoke upwards
             int newY = (int)(Y + Velocity);
 
@@ -71,6 +89,34 @@ namespace FallingSand.ParticleTypes
 
             // Slightly reduce the velocity to slow down over time
             Velocity *= 0.999f;
+        }
+
+        private void MakeWater(Particle[,] grid)
+        {
+            // Delete existing SmokeParticle
+            grid[X, Y] = null;
+
+            // Create a WaterParticle
+            grid[X, Y] = new WaterParticle(X, Y);
+
+
+        }
+
+        private bool CheckAltitude()
+        {
+            // If the SmokeParticle is 75% game window height, return true
+            if (Y <= Game1.gridHeight * .25) { return true; }
+            return false;
+        }
+
+        private bool RainFactor()
+        {
+            // Generate a random number between 0 and 100
+            Random random = new Random();
+
+            // 10% Chance for the SmokeParticle to condense into a WaterParticle
+            if (random.Next(0, 100) < 10) { return true; }
+            return false;
         }
     }
 }

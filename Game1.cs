@@ -21,13 +21,14 @@ namespace FallingSand
         string currentParticleType = "Sand"; // Default particle type
 
         // Define palette area
-        Rectangle sandButton, waterButton, wetSandButton, fireButton, lavaButton, stoneButton;
+        Rectangle sandButton, waterButton, wetSandButton, fireButton, lavaButton, stoneButton, smokeButton;
         Color sandColor = Color.Yellow;
         Color waterColor = Color.Blue;
         Color wetSandColor = new Color(169, 132, 46); // Brown
         Color fireColor = Color.Red;
         Color lavaColor = new Color(253, 83, 21);
         Color stoneColor = new Color(191, 191, 191); // Ashy
+        Color smokeColor = Color.Gray;
 
         public Game1()
         {
@@ -51,6 +52,8 @@ namespace FallingSand
             fireButton = new Rectangle(310, gridHeight * cellSize + 10, 50, 30);
             lavaButton = new Rectangle(410, gridHeight * cellSize + 10, 50, 30);
             stoneButton = new Rectangle(510, gridHeight * cellSize + 10, 50, 30);
+            smokeButton = new Rectangle(620, gridHeight * cellSize + 10, 50, 30);
+
 
             base.Initialize();
         }
@@ -96,6 +99,10 @@ namespace FallingSand
                 {
                     currentParticleType = "Stone";
                 }
+                else if (smokeButton.Contains(mouseState.Position))
+                {
+                    currentParticleType = "Smoke";
+                }
                 else
                 {
                     // Handle dropping multiple particles into the grid
@@ -138,13 +145,29 @@ namespace FallingSand
                                 {
                                     grid[particleX, particleY] = new StoneParticle(particleX, particleY);
                                 }
+                                else if (currentParticleType == "Smoke")
+                                {
+                                    grid[particleX, particleY] = new SmokeParticle(particleX, particleY);
+                                }
                             }
                         }
                     }
                 }
             }
 
-            // First pass: Update water particles
+            // First pass: Update smoke particles (top-down to prioritize upward movement)
+            for (int y = 0; y < gridHeight; y++)
+            {
+                for (int x = 0; x < gridWidth; x++)
+                {
+                    if (grid[x, y] is SmokeParticle)
+                    {
+                        grid[x, y].Update(gravity, grid);
+                    }
+                }
+            }
+
+            // Second pass: Update water particles (bottom-up to allow falling)
             for (int y = gridHeight - 1; y >= 0; y--)
             {
                 for (int x = 0; x < gridWidth; x++)
@@ -156,12 +179,12 @@ namespace FallingSand
                 }
             }
 
-            // Second pass: Update all other particles
+            // Third pass: Update all other particles (bottom-up to maintain existing behavior)
             for (int y = gridHeight - 1; y >= 0; y--)
             {
                 for (int x = 0; x < gridWidth; x++)
                 {
-                    if (grid[x, y] != null && !(grid[x, y] is WaterParticle)) // Avoid re-updating water particles
+                    if (grid[x, y] != null && !(grid[x, y] is WaterParticle || grid[x, y] is SmokeParticle)) // Avoid re-updating
                     {
                         grid[x, y].Update(gravity, grid);
                     }
@@ -169,6 +192,7 @@ namespace FallingSand
             }
 
             base.Update(gameTime);
+
         }
 
 
@@ -219,6 +243,7 @@ namespace FallingSand
                         else if (grid[x, y] is SmokeParticle)
                         {
                             particleColor = Color.Gray;
+                            particleSize = cellSize * 2;
                         }
                         else
                         {
@@ -237,6 +262,7 @@ namespace FallingSand
             _spriteBatch.Draw(pixel, fireButton, fireColor);
             _spriteBatch.Draw(pixel, lavaButton, lavaColor);
             _spriteBatch.Draw(pixel, stoneButton, stoneColor);
+            _spriteBatch.Draw(pixel, smokeButton, smokeColor);
 
             // Draw the labels under each button using SpriteBatch.DrawString
             if (font != null)
@@ -247,6 +273,7 @@ namespace FallingSand
                 _spriteBatch.DrawString(font, "Fire", new Vector2(fireButton.X, fireButton.Y + fireButton.Height + 5), Color.White);
                 _spriteBatch.DrawString(font, "Lava", new Vector2(lavaButton.X, lavaButton.Y + lavaButton.Height + 5), Color.White);
                 _spriteBatch.DrawString(font, "Stone", new Vector2(stoneButton.X, stoneButton.Y + stoneButton.Height + 5), Color.White);
+                _spriteBatch.DrawString(font, "Smoke", new Vector2(smokeButton.X, smokeButton.Y + smokeButton.Height + 5), Color.White);
             }
 
             _spriteBatch.End();
