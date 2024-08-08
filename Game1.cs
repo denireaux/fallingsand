@@ -21,7 +21,7 @@ namespace FallingSand
         string currentParticleType = "Sand"; // Default particle type
 
         // Define palette area
-        Rectangle sandButton, waterButton, wetSandButton, fireButton, lavaButton, stoneButton, vaporButton, soilButton, heaterButton, coolerButton;
+        Rectangle sandButton, waterButton, wetSandButton, fireButton, lavaButton, stoneButton, vaporButton, soilButton, heaterButton, coolerButton, snowButton;
         Color sandColor = Color.Yellow;
         Color waterColor = Color.Blue;
         Color wetSandColor = new Color(169, 132, 46); // Brown
@@ -32,6 +32,7 @@ namespace FallingSand
         Color soilColor = new Color(62, 49, 23); // Dark Brown
         Color heaterColor = new Color(255, 165, 0); // Orange
         Color coolerColor = new Color(0, 162, 232); // Cyan
+        Color snowColor = Color.White; // White
 
         public Game1()
         {
@@ -59,6 +60,7 @@ namespace FallingSand
             soilButton = new Rectangle(710, gridHeight * cellSize + 10, 50, 30);
             heaterButton = new Rectangle(810, gridHeight * cellSize + 10, 50, 30);
             coolerButton = new Rectangle(910, gridHeight * cellSize + 10, 50, 30);
+            snowButton = new Rectangle(1010, gridHeight * cellSize + 10, 50, 30);
 
             base.Initialize();
         }
@@ -120,6 +122,10 @@ namespace FallingSand
                 {
                     currentParticleType = "Cooler";
                 }
+                else if (snowButton.Contains(mouseState.Position))
+                {
+                    currentParticleType = "Snow";
+                }
                 else
                 {
                     // Handle dropping multiple particles into the grid
@@ -176,6 +182,10 @@ namespace FallingSand
                                     else if (currentParticleType == "Cooler")
                                     {
                                         grid[particleX, particleY] = new CoolerParticle(particleX, particleY);
+                                    }
+                                    else if (currentParticleType == "Snow")
+                                    {
+                                        grid[particleX, particleY] = new SnowParticle(particleX, particleY);
                                     }
                                 }
                             }
@@ -286,6 +296,11 @@ namespace FallingSand
                         {
                             particleColor = coolerColor;
                         }
+                        else if (grid[x, y] is SnowParticle)
+                        {
+                            particleColor = snowColor;
+                            particleSize = cellSize * 2;
+                        }   
                         else
                         {
                             particleColor = Color.White;
@@ -306,6 +321,7 @@ namespace FallingSand
             _spriteBatch.Draw(pixel, soilButton, soilColor);
             _spriteBatch.Draw(pixel, heaterButton, heaterColor);
             _spriteBatch.Draw(pixel, coolerButton, coolerColor);
+            _spriteBatch.Draw(pixel, snowButton, snowColor);
 
             // Draw the labels under each button using SpriteBatch.DrawString
             if (font != null)
@@ -320,6 +336,7 @@ namespace FallingSand
                 _spriteBatch.DrawString(font, "Soil", new Vector2(soilButton.X, soilButton.Y + soilButton.Height + 5), Color.White);
                 _spriteBatch.DrawString(font, "Heater", new Vector2(heaterButton.X, heaterButton.Y + heaterButton.Height + 5), Color.White);
                 _spriteBatch.DrawString(font, "Cooler", new Vector2(coolerButton.X, coolerButton.Y + coolerButton.Height + 5), Color.White);
+                _spriteBatch.DrawString(font, "Snow", new Vector2(snowButton.X, snowButton.Y + snowButton.Height + 5), Color.White);
             }
 
             _spriteBatch.End();
