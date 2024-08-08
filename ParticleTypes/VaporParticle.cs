@@ -118,7 +118,7 @@ namespace FallingSand.ParticleTypes
             Random random = new Random();
 
             // 10% Chance for the SmokeParticle to condense into a WaterParticle
-            if (random.Next(0, 100) < 10) { return true; }
+            if (random.Next(0, 100) < 3) { return true; }
             return false;
         }
 
