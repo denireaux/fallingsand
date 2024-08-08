@@ -6,6 +6,7 @@ namespace FallingSand.ParticleTypes
         public int Y { get; set; }
         public float Velocity { get; set; }
         public bool isHot { get; protected set; }
+        public bool isCold { get; protected set; }
 
         protected Particle(int x, int y)
         {
@@ -13,6 +14,7 @@ namespace FallingSand.ParticleTypes
             Y = y;
             Velocity = 0f;
             isHot = false;
+            isCold = false;
         }
 
         public abstract void Update(float gravity, Particle[,] grid);

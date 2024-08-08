@@ -110,7 +110,7 @@ namespace FallingSand.ParticleTypes
         // Turn WaterParticle into SmokeParticle
         private void MakeSmoke(Particle[,] grid)
         {
-            grid[X, Y] = new SmokeParticle(X, Y);
+            grid[X, Y] = new VaporParticle(X, Y);
         }
 
         // Move the particle to a new location
@@ -125,7 +125,7 @@ namespace FallingSand.ParticleTypes
         // Emit smoke at the current location
         private void EmitSmoke(Particle[,] grid)
         {
-            grid[X, Y] = new SmokeParticle(X, Y);
+            grid[X, Y] = new VaporParticle(X, Y);
         }
     }
 }

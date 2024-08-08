@@ -77,7 +77,7 @@ namespace FallingSand.ParticleTypes
             {
                 if (grid[smokeX, smokeY] == null)
                 {
-                    grid[smokeX, smokeY] = new SmokeParticle(smokeX, smokeY);
+                    grid[smokeX, smokeY] = new VaporParticle(smokeX, smokeY);
                 }
             }
             

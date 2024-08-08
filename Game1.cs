@@ -21,16 +21,17 @@ namespace FallingSand
         string currentParticleType = "Sand"; // Default particle type
 
         // Define palette area
-        Rectangle sandButton, waterButton, wetSandButton, fireButton, lavaButton, stoneButton, smokeButton, soilButton, heaterButton;
+        Rectangle sandButton, waterButton, wetSandButton, fireButton, lavaButton, stoneButton, vaporButton, soilButton, heaterButton, coolerButton;
         Color sandColor = Color.Yellow;
         Color waterColor = Color.Blue;
         Color wetSandColor = new Color(169, 132, 46); // Brown
         Color fireColor = Color.Red;
         Color lavaColor = new Color(253, 83, 21);
         Color stoneColor = new Color(191, 191, 191); // Ashy
-        Color smokeColor = Color.Gray;
+        Color vaporColor = Color.White;
         Color soilColor = new Color(62, 49, 23); // Dark Brown
         Color heaterColor = new Color(255, 165, 0); // Orange
+        Color coolerColor = new Color(0, 162, 232); // Cyan
 
         public Game1()
         {
@@ -54,9 +55,10 @@ namespace FallingSand
             fireButton = new Rectangle(310, gridHeight * cellSize + 10, 50, 30);
             lavaButton = new Rectangle(410, gridHeight * cellSize + 10, 50, 30);
             stoneButton = new Rectangle(510, gridHeight * cellSize + 10, 50, 30);
-            smokeButton = new Rectangle(610, gridHeight * cellSize + 10, 50, 30);
+            vaporButton = new Rectangle(610, gridHeight * cellSize + 10, 50, 30);
             soilButton = new Rectangle(710, gridHeight * cellSize + 10, 50, 30);
             heaterButton = new Rectangle(810, gridHeight * cellSize + 10, 50, 30);
+            coolerButton = new Rectangle(910, gridHeight * cellSize + 10, 50, 30);
 
             base.Initialize();
         }
@@ -102,9 +104,9 @@ namespace FallingSand
                 {
                     currentParticleType = "Stone";
                 }
-                else if (smokeButton.Contains(mouseState.Position))
+                else if (vaporButton.Contains(mouseState.Position))
                 {
-                    currentParticleType = "Smoke";
+                    currentParticleType = "Vapor";
                 }
                 else if (soilButton.Contains(mouseState.Position))
                 {
@@ -113,6 +115,10 @@ namespace FallingSand
                 else if (heaterButton.Contains(mouseState.Position))
                 {
                     currentParticleType = "Heater";
+                }
+                else if (coolerButton.Contains(mouseState.Position))
+                {
+                    currentParticleType = "Cooler";
                 }
                 else
                 {
@@ -155,9 +161,9 @@ namespace FallingSand
                                     {
                                         grid[particleX, particleY] = new StoneParticle(particleX, particleY);
                                     }
-                                    else if (currentParticleType == "Smoke")
+                                    else if (currentParticleType == "Vapor")
                                     {
-                                        grid[particleX, particleY] = new SmokeParticle(particleX, particleY);
+                                        grid[particleX, particleY] = new VaporParticle(particleX, particleY);
                                     }
                                     else if (currentParticleType == "Soil")
                                     {
@@ -166,6 +172,10 @@ namespace FallingSand
                                     else if (currentParticleType == "Heater")
                                     {
                                         grid[particleX, particleY] = new HeaterParticle(particleX, particleY);
+                                    }
+                                    else if (currentParticleType == "Cooler")
+                                    {
+                                        grid[particleX, particleY] = new CoolerParticle(particleX, particleY);
                                     }
                                 }
                             }
@@ -179,7 +189,7 @@ namespace FallingSand
             {
                 for (int x = 0; x < gridWidth; x++)
                 {
-                    if (grid[x, y] is SmokeParticle)
+                    if (grid[x, y] is VaporParticle)
                     {
                         grid[x, y].Update(gravity, grid);
                     }
@@ -203,7 +213,7 @@ namespace FallingSand
             {
                 for (int x = 0; x < gridWidth; x++)
                 {
-                    if (grid[x, y] != null && !(grid[x, y] is WaterParticle || grid[x, y] is SmokeParticle)) // Avoid re-updating
+                    if (grid[x, y] != null && !(grid[x, y] is WaterParticle || grid[x, y] is VaporParticle)) // Avoid re-updating
                     {
                         grid[x, y].Update(gravity, grid);
                     }
@@ -258,9 +268,9 @@ namespace FallingSand
                         {
                             particleColor = stoneColor;
                         }
-                        else if (grid[x, y] is SmokeParticle)
+                        else if (grid[x, y] is VaporParticle)
                         {
-                            particleColor = smokeColor;
+                            particleColor = vaporColor;
                             particleSize = cellSize * 2;
                         }
                         else if (grid[x, y] is SoilParticle)
@@ -272,11 +282,14 @@ namespace FallingSand
                         {
                             particleColor = heaterColor;
                         }
+                        else if (grid[x, y] is CoolerParticle)
+                        {
+                            particleColor = coolerColor;
+                        }
                         else
                         {
                             particleColor = Color.White;
                         }
-
                         _spriteBatch.Draw(pixel, new Rectangle(x * cellSize, y * cellSize, particleSize, particleSize), particleColor);
                     }
                 }
@@ -289,9 +302,10 @@ namespace FallingSand
             _spriteBatch.Draw(pixel, fireButton, fireColor);
             _spriteBatch.Draw(pixel, lavaButton, lavaColor);
             _spriteBatch.Draw(pixel, stoneButton, stoneColor);
-            _spriteBatch.Draw(pixel, smokeButton, smokeColor);
+            _spriteBatch.Draw(pixel, vaporButton, vaporColor);
             _spriteBatch.Draw(pixel, soilButton, soilColor);
             _spriteBatch.Draw(pixel, heaterButton, heaterColor);
+            _spriteBatch.Draw(pixel, coolerButton, coolerColor);
 
             // Draw the labels under each button using SpriteBatch.DrawString
             if (font != null)
@@ -302,9 +316,10 @@ namespace FallingSand
                 _spriteBatch.DrawString(font, "Fire", new Vector2(fireButton.X, fireButton.Y + fireButton.Height + 5), Color.White);
                 _spriteBatch.DrawString(font, "Lava", new Vector2(lavaButton.X, lavaButton.Y + lavaButton.Height + 5), Color.White);
                 _spriteBatch.DrawString(font, "Stone", new Vector2(stoneButton.X, stoneButton.Y + stoneButton.Height + 5), Color.White);
-                _spriteBatch.DrawString(font, "Smoke", new Vector2(smokeButton.X, smokeButton.Y + smokeButton.Height + 5), Color.White);
+                _spriteBatch.DrawString(font, "Vapor", new Vector2(vaporButton.X, vaporButton.Y + vaporButton.Height + 5), Color.White);
                 _spriteBatch.DrawString(font, "Soil", new Vector2(soilButton.X, soilButton.Y + soilButton.Height + 5), Color.White);
                 _spriteBatch.DrawString(font, "Heater", new Vector2(heaterButton.X, heaterButton.Y + heaterButton.Height + 5), Color.White);
+                _spriteBatch.DrawString(font, "Cooler", new Vector2(coolerButton.X, coolerButton.Y + coolerButton.Height + 5), Color.White);
             }
 
             _spriteBatch.End();

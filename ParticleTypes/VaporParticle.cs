@@ -5,7 +5,7 @@ using System.Xml.Schema;
 
 namespace FallingSand.ParticleTypes
 {
-    public class SmokeParticle : Particle
+    public class VaporParticle : Particle
     {
         // Factor by which velocity is reduced upon bouncing
         private float energyLossFactor = 0.8f; 
@@ -16,13 +16,16 @@ namespace FallingSand.ParticleTypes
         // Flag indicating whether condensation should occur or not
         private bool willCondense;
 
-        public SmokeParticle(int x, int y) : base(x, y)
+        public VaporParticle(int x, int y) : base(x, y)
         {
             Velocity = -0.2f; // Very slow upward movement
         }
 
         public override void Update(float gravity, Particle[,] grid)
         {
+            // Check Condensation via cooling
+            CondenseFromCooling(grid);
+
             // Check altitude
             canCondense = CheckAltitude();
 
@@ -66,7 +69,7 @@ namespace FallingSand.ParticleTypes
                 Y = newY;
                 grid[X, Y] = this;
             }
-            else if (grid[X, newY] is SmokeParticle)
+            else if (grid[X, newY] is VaporParticle)
             {
                 // Clump with other smoke particles
                 Random rand = new Random();
@@ -117,6 +120,22 @@ namespace FallingSand.ParticleTypes
             // 10% Chance for the SmokeParticle to condense into a WaterParticle
             if (random.Next(0, 100) < 10) { return true; }
             return false;
+        }
+
+        private void CondenseFromCooling(Particle[,] grid)
+{
+            // Check whether there is a cooling particle nearby
+            Particle[] particlesNear = GetSurroundingParticles(grid);
+
+            foreach (Particle particle in particlesNear) 
+            {
+                if (particle != null && particle.isCold)
+                {
+                    // Create a new WaterParticle
+                    MakeWater(grid);
+                    return; // Exit early since condensation has occurred
+                }
+            }
         }
     }
 }
