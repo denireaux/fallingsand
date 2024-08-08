@@ -15,6 +15,7 @@ namespace FallingSand.ParticleTypes
             // Check if particle should melt
             bool shouldMelt = WarmSurroundings(grid);
 
+            // Melt the particle if it should
             if (shouldMelt) { Melt(grid); }
 
             // Apply gravity very minimally or not at all

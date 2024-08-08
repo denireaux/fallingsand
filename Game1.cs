@@ -21,7 +21,7 @@ namespace FallingSand
         string currentParticleType = "Sand"; // Default particle type
 
         // Define palette area
-        Rectangle sandButton, waterButton, wetSandButton, fireButton, lavaButton, stoneButton, vaporButton, soilButton, heaterButton, coolerButton, snowButton;
+        Rectangle sandButton, waterButton, wetSandButton, fireButton, lavaButton, stoneButton, vaporButton, soilButton, heaterButton, coolerButton, snowButton, gunpowderButton, smokeButton;
         Color sandColor = Color.Yellow;
         Color waterColor = Color.Blue;
         Color wetSandColor = new Color(169, 132, 46); // Brown
@@ -33,6 +33,8 @@ namespace FallingSand
         Color heaterColor = new Color(255, 165, 0); // Orange
         Color coolerColor = new Color(0, 162, 232); // Cyan
         Color snowColor = Color.White; // White
+        Color gunpowderColor = Color.Green;
+        Color smokeColor = Color.White;
 
         public Game1()
         {
@@ -61,6 +63,8 @@ namespace FallingSand
             heaterButton = new Rectangle(810, gridHeight * cellSize + 10, 50, 30);
             coolerButton = new Rectangle(910, gridHeight * cellSize + 10, 50, 30);
             snowButton = new Rectangle(1010, gridHeight * cellSize + 10, 50, 30);
+            gunpowderButton = new Rectangle(1110, gridHeight * cellSize + 10, 50, 30);
+            smokeButton = new Rectangle(1210, gridHeight * cellSize + 10, 50, 30);
 
             base.Initialize();
         }
@@ -126,6 +130,14 @@ namespace FallingSand
                 {
                     currentParticleType = "Snow";
                 }
+                else if (gunpowderButton.Contains(mouseState.Position))
+                {
+                    currentParticleType = "Powder";
+                }
+                else if (smokeButton.Contains(mouseState.Position))
+                {
+                    currentParticleType = "Smoke";
+                }
                 else
                 {
                     // Handle dropping multiple particles into the grid
@@ -187,6 +199,14 @@ namespace FallingSand
                                     {
                                         grid[particleX, particleY] = new SnowParticle(particleX, particleY);
                                     }
+                                    else if (currentParticleType == "Powder")
+                                    {
+                                        grid[particleX, particleY] = new GunpowderParticle(particleX, particleY);
+                                    }
+                                    else if (currentParticleType == "Smoke")
+                                    {
+                                        grid[particleX, particleY] = new SmokeParticle(particleX, particleY);
+                                    }
                                 }
                             }
                         }
@@ -199,7 +219,7 @@ namespace FallingSand
             {
                 for (int x = 0; x < gridWidth; x++)
                 {
-                    if (grid[x, y] is VaporParticle)
+                    if (grid[x, y] is VaporParticle || grid[x, y] is SmokeParticle)
                     {
                         grid[x, y].Update(gravity, grid);
                     }
@@ -301,6 +321,16 @@ namespace FallingSand
                             particleColor = snowColor;
                             particleSize = cellSize * 2;
                         }   
+                        else if (grid[x, y] is GunpowderParticle)
+                        {
+                            particleColor = gunpowderColor;
+                            particleSize = cellSize * 2;
+                        }
+                        else if (grid[x, y] is SmokeParticle)
+                        {
+                            particleColor = smokeColor;
+                            particleSize = cellSize * 2;
+                        }
                         else
                         {
                             particleColor = Color.White;
@@ -322,6 +352,8 @@ namespace FallingSand
             _spriteBatch.Draw(pixel, heaterButton, heaterColor);
             _spriteBatch.Draw(pixel, coolerButton, coolerColor);
             _spriteBatch.Draw(pixel, snowButton, snowColor);
+            _spriteBatch.Draw(pixel, gunpowderButton, gunpowderColor);
+            _spriteBatch.Draw(pixel, smokeButton, smokeColor);
 
             // Draw the labels under each button using SpriteBatch.DrawString
             if (font != null)
@@ -337,6 +369,8 @@ namespace FallingSand
                 _spriteBatch.DrawString(font, "Heater", new Vector2(heaterButton.X, heaterButton.Y + heaterButton.Height + 5), Color.White);
                 _spriteBatch.DrawString(font, "Cooler", new Vector2(coolerButton.X, coolerButton.Y + coolerButton.Height + 5), Color.White);
                 _spriteBatch.DrawString(font, "Snow", new Vector2(snowButton.X, snowButton.Y + snowButton.Height + 5), Color.White);
+                _spriteBatch.DrawString(font, "Gunpowder", new Vector2(gunpowderButton.X, gunpowderButton.Y + gunpowderButton.Height + 5), Color.White);
+                _spriteBatch.DrawString(font, "Smoke", new Vector2(smokeButton.X, smokeButton.Y + smokeButton.Height + 5), Color.White);
             }
 
             _spriteBatch.End();
