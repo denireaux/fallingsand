@@ -8,7 +8,7 @@ namespace FallingSand.ParticleTypes
     public class VaporParticle : Particle
     {
         // Factor by which velocity is reduced upon bouncing
-        private float energyLossFactor = 0.8f; 
+        private float energyLossFactor = 0.8f;
 
         // Flag indicating whether altitude is high enough for the SmokeParticle to 'condense' into a WaterParticle
         private bool canCondense;
@@ -101,8 +101,6 @@ namespace FallingSand.ParticleTypes
 
             // Create a WaterParticle
             grid[X, Y] = new WaterParticle(X, Y);
-
-
         }
 
         private bool CheckAltitude()
@@ -123,7 +121,7 @@ namespace FallingSand.ParticleTypes
         }
 
         private void CondenseFromCooling(Particle[,] grid)
-{
+        {
             // Check whether there is a cooling particle nearby
             Particle[] particlesNear = GetSurroundingParticles(grid);
 
