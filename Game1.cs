@@ -33,7 +33,7 @@ namespace FallingSand
         Color heaterColor = new Color(255, 165, 0); // Orange
         Color coolerColor = new Color(0, 162, 232); // Cyan
         Color snowColor = Color.White; // White
-        Color gunpowderColor = Color.Green;
+        Color gunpowderColor = new Color(40, 40, 40);
         Color smokeColor = Color.White;
 
         public Game1()
@@ -243,7 +243,7 @@ namespace FallingSand
             {
                 for (int x = 0; x < gridWidth; x++)
                 {
-                    if (grid[x, y] != null && !(grid[x, y] is WaterParticle || grid[x, y] is VaporParticle)) // Avoid re-updating
+                    if (grid[x, y] != null && !(grid[x, y] is WaterParticle || grid[x, y] is VaporParticle  || grid[x, y] is SmokeParticle)) // Avoid re-updating
                     {
                         grid[x, y].Update(gravity, grid);
                     }

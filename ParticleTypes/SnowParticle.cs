@@ -1,5 +1,6 @@
 using Microsoft.Xna.Framework;
 using System;
+using System.Threading;
 
 namespace FallingSand.ParticleTypes
 {
@@ -80,7 +81,10 @@ namespace FallingSand.ParticleTypes
             grid[X, Y] = null; 
 
             // Create WaterParticle
-            for (int index = 1; index < 10; index++) { grid[X, Y] = new WaterParticle(X, Y); }
+            for (int index = 1; index < 10; index++) 
+            { 
+                grid[X, Y] = new WaterParticle(X, Y); 
+            }
             
 
             return;

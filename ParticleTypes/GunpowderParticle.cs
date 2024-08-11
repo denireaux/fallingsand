@@ -101,7 +101,7 @@ namespace FallingSand.ParticleTypes
 
                     if (smokeX >= 0 && smokeX < grid.GetLength(0) && smokeY >= 0 && smokeY < grid.GetLength(1))
                     {
-                        grid[smokeX, smokeY] = new VaporParticle(smokeX, smokeY);
+                        grid[smokeX, smokeY] = new SmokeParticle(smokeX, smokeY);
                     }
                 }
             }

@@ -1,6 +1,5 @@
 using Microsoft.Xna.Framework;
 using System;
-using System.Threading;
 
 namespace FallingSand.ParticleTypes
 {
@@ -22,7 +21,7 @@ namespace FallingSand.ParticleTypes
             // Check all surrounding spaces for particle.isHot == true, and convert water to smoke if so
             if (HeatDetected(grid))
             {
-                MakeSmoke(grid);
+                EmitVapor(grid);
                 return; // Exit early since the water particle is now smoke
             }
 
@@ -51,12 +50,12 @@ namespace FallingSand.ParticleTypes
             }
             else if (belowParticle is FireParticle)
             {
-                EmitSmoke(grid);
+                EmitVapor(grid);
             }
             else if (belowParticle is LavaParticle)
             {
                 grid[X, newY] = new StoneParticle(X, newY);
-                EmitSmoke(grid);
+                EmitVapor(grid);
             }
         }
 
@@ -82,7 +81,7 @@ namespace FallingSand.ParticleTypes
                 }
                 else if (diagonalParticle is FireParticle)
                 {
-                    EmitSmoke(grid);
+                    EmitVapor(grid);
                     grid[X + direction, Y + 1] = null; // Remove the fire particle
                 }
                 else if (sideParticle == null)
@@ -107,12 +106,6 @@ namespace FallingSand.ParticleTypes
             return false;
         }
 
-        // Turn WaterParticle into SmokeParticle
-        private void MakeSmoke(Particle[,] grid)
-        {
-            grid[X, Y] = new VaporParticle(X, Y);
-        }
-
         // Move the particle to a new location
         private void MoveParticle(Particle[,] grid, int newX, int newY)
         {
@@ -122,8 +115,8 @@ namespace FallingSand.ParticleTypes
             grid[X, Y] = this;
         }
 
-        // Emit smoke at the current location
-        private void EmitSmoke(Particle[,] grid)
+        // Turn WaterParticle into VaporParticle
+        private void EmitVapor(Particle[,] grid)
         {
             grid[X, Y] = new VaporParticle(X, Y);
         }
