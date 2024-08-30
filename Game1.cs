@@ -190,7 +190,7 @@ namespace FallingSand
                         if (particleColors.ContainsKey(typeName))
                         {
                             Color particleColor = particleColors[typeName];
-                            int particleSize = (typeName == "WetSand" || typeName == "Vapor" || typeName == "Soil" || typeName == "Snow" || typeName == "Powder" || typeName == "Smoke" || typeName == "Acid") ? cellSize * 2 : cellSize;
+                            int particleSize = (typeName == "Sand" || typeName == "Water" || typeName == "WetSand" || typeName == "Vapor" || typeName == "Soil" || typeName == "Snow" || typeName == "Powder" || typeName == "Smoke" || typeName == "Acid") ? cellSize * 2 : cellSize;
                             _spriteBatch.Draw(pixel, new Rectangle(x * cellSize, y * cellSize, particleSize, particleSize), particleColor);
                         }
                     }

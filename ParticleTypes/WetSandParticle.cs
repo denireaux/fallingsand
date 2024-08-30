@@ -19,56 +19,75 @@ namespace FallingSand.ParticleTypes
             if (newY >= Game1.gridHeight)
                 newY = Game1.gridHeight - 1;
 
-            if (newY < Game1.gridHeight)
+            // Ensure the wet sand sinks properly
+            MoveSelf(grid, X, newY);
+        }
+
+        public override void MoveSelf(Particle[,] grid, int newX, int newY)
+        {
+            // Boundary check to ensure we're not going out of grid bounds
+            if (newX < 0 || newX >= grid.GetLength(0) || newY < 0 || newY >= grid.GetLength(1))
             {
-                if (grid[X, newY] == null || grid[X, newY] is WaterParticle)
+                return;
+            }
+
+            // Check if the position directly below is empty or contains water
+            if (grid[X, newY] == null || grid[X, newY] is WaterParticle)
+            {
+                // If moving into water, swap positions
+                if (grid[X, newY] is WaterParticle)
                 {
-                    // Swap positions with water or move down if empty
-                    if (grid[X, newY] is WaterParticle)
+                    Particle temp = grid[X, newY];
+                    grid[X, newY] = this;
+                    grid[X, Y] = temp;
+                    temp.X = X;
+                    temp.Y = Y;
+                }
+                else
+                {
+                    // Just move down if it's empty
+                    grid[X, Y] = null;
+                    Y = newY;
+                    grid[X, Y] = this;
+                }
+            }
+            else
+            {
+                // If directly below is not empty, try to slide diagonally
+                AttemptDiagonalSlide(grid);
+            }
+        }
+
+        private void AttemptDiagonalSlide(Particle[,] grid)
+        {
+            Random rand = new Random();
+            int direction = rand.Next(0, 2) * 2 - 1; // Randomly pick -1 (left) or 1 (right)
+
+            int newX = X + direction;
+            int newY = Y + 1;
+
+            if (newX >= 0 && newX < Game1.gridWidth && newY < Game1.gridHeight)
+            {
+                if (grid[newX, newY] == null || grid[newX, newY] is WaterParticle)
+                {
+                    if (grid[newX, newY] is WaterParticle)
                     {
-                        // Swap positions
-                        grid[X, Y] = grid[X, newY];
-                        grid[X, newY].X = X;
-                        grid[X, newY].Y = Y;
+                        Particle temp = grid[newX, newY];
+                        grid[newX, newY] = this;
+                        grid[X, Y] = temp;
+                        temp.X = X;
+                        temp.Y = Y;
                     }
                     else
                     {
                         grid[X, Y] = null;
                     }
 
+                    X = newX;
                     Y = newY;
                     grid[X, Y] = this;
                 }
-                else
-                {
-                    // Try sliding diagonally
-                    Random rand = new Random();
-                    int direction = rand.Next(0, 2) * 2 - 1;
-
-                    if (X + direction >= 0 && X + direction < Game1.gridWidth && Y + 1 < Game1.gridHeight)
-                    {
-                        if (grid[X + direction, Y + 1] == null || grid[X + direction, Y + 1] is WaterParticle)
-                        {
-                            if (grid[X + direction, Y + 1] is WaterParticle)
-                            {
-                                // Swap positions with water
-                                grid[X, Y] = grid[X + direction, Y + 1];
-                                grid[X + direction, Y + 1].X = X;
-                                grid[X + direction, Y + 1].Y = Y;
-                            }
-                            else
-                            {
-                                grid[X, Y] = null;
-                            }
-
-                            X += direction;
-                            Y += 1;
-                            grid[X, Y] = this;
-                        }
-                    }
-                }
             }
         }
-        public override void MoveSelf(Particle[,] grid, int newX, int newY) { return; }
     }
 }

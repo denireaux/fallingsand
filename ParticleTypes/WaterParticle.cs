@@ -42,9 +42,15 @@ namespace FallingSand.ParticleTypes
             Particle particleLowerRight = particlesNear[5];
 
             // Check the space directly below
-            if (particleBelow == null && Y + 1 < grid.GetLength(1))
+            if (particleBelow == null && DownInbounds(grid))
             {
                 MoveDown(grid, X, Y + 1);
+            }
+
+            // Handle falling on top of a SandParticle
+            else if (particleBelow is SandParticle)
+            {
+                InteractWithSand(grid);
             }
 
             // Check if the particle can move diagonally down-left
@@ -79,15 +85,12 @@ namespace FallingSand.ParticleTypes
                 Random rand = new Random();
                 int randomNumber = rand.Next(1, 11);
 
-                if (randomNumber >= 6 && X + 1 < grid.GetLength(0)) { MoveRight(grid); }
-                else if (X - 1 >= 0) { MoveLeft(grid); }
+                if (randomNumber >= 6 && RightInbounds(grid)) { MoveRight(grid); }
+                else if (LeftInbounds(grid)) { MoveLeft(grid); }
             }
 
             // Otherwise, the particle should remain in place
-            else
-            {
-                return;
-            }
+            else { return; }
         }
 
         // Checks if the cell underneath it is inbounds
@@ -180,6 +183,13 @@ namespace FallingSand.ParticleTypes
             grid[X, Y] = null;
             grid[X + 1, Y] = this;
             X++;
+        }
+
+        // Handles interaction with SandParticle
+        private void InteractWithSand(Particle[,] grid)
+        {
+            grid[X, Y] = null;
+            grid[X, Y] = new WetSandParticle(X, Y);
         }
     }
 }

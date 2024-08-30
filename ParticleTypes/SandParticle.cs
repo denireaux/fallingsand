@@ -72,13 +72,8 @@ namespace FallingSand.ParticleTypes
 
         private void MakeWetSand(Particle[,] grid)
         {
-            // Delete current SandParticle
-            grid[X, Y] = null;
-
-            // Delete the below WaterParticle
-            grid[X, Y + 1] = null;
-
             // Create a new WetSandParticle
+            grid[X, Y] = null;
             grid[X, Y] = new WetSandParticle(X, Y);
         }
 
