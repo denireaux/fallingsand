@@ -98,10 +98,12 @@ namespace FallingSand.ParticleTypes
                 {
                     grid[x, y] = null; // Remove the water particle
                     grid[X, Y] = new StoneParticle(X, Y); // Turn lava into stone
+                    grid[X, Y - 1] = new VaporParticle(X, Y - 1);
                     return true; // Indicate that an interaction occurred
                 }
             }
             return false;
         }
+        public override void MoveSelf(Particle[,] grid, int newX, int newY) { return; }
     }
 }

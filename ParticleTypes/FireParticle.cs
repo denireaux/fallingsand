@@ -80,7 +80,7 @@ namespace FallingSand.ParticleTypes
                     grid[smokeX, smokeY] = new VaporParticle(smokeX, smokeY);
                 }
             }
-            
         }
+        public override void MoveSelf(Particle[,] grid, int newX, int newY) { return; }
     }
 }

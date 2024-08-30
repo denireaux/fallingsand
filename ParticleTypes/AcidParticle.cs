@@ -3,25 +3,24 @@ using System;
 
 namespace FallingSand.ParticleTypes
 {
-    public class SandParticle : Particle
+    public class AcidParticle : Particle
     {
-        public SandParticle(int x, int y) : base(x, y)
+        private static readonly Random rand = new Random();
+
+        public AcidParticle(int x, int y) : base(x, y)
         {
             Velocity = 0f;
+            isHot = false;
+            isCold = false;
         }
 
         public override void Update(float gravity, Particle[,] grid)
         {
-            Velocity += gravity * 1.0f;
+            Velocity += gravity;
             int newY = (int)(Y + Velocity);
 
-            if (newY >= Game1.gridHeight)
-                newY = Game1.gridHeight - 1;
-
-            if (newY < Game1.gridHeight)
-            {
-                MoveSelf(grid, X, Y + 1);
-            }
+            // Try to move down first
+            MoveSelf(grid, X, Y + 1);
         }
 
         public override void MoveSelf(Particle[,] grid, int newX, int newY)
@@ -43,67 +42,56 @@ namespace FallingSand.ParticleTypes
             // Check the space directly below
             if (particleBelow == null)
             {
-                MoveDown(grid, X, Y + 1);
+                // Move downwards
+                grid[newX, newY] = this;
+                grid[X, Y] = null;
+                X = newX;
+                Y = newY;
             }
-
-            else if (particleBelow is WaterParticle)
-            {
-                MakeWetSand(grid);
-            }
-
             // Check if the particle can move diagonally down-right
             else if (particleRight == null && grid[X + 1, Y + 1] == null)
             {
-                MoveDownRight(grid);
+                grid[X, Y] = null;
+                grid[X + 1, Y + 1] = this;
+                X++;
+                Y++;
             }
-
             // Check if the particle can move diagonally down-left
             else if (particleLeft == null && grid[X - 1, Y + 1] == null)
             {
-                MoveDownLeft(grid);
+                grid[X, Y] = null;
+                grid[X - 1, Y + 1] = this;
+                X--;
+                Y++;
             }
-
             // Otherwise, the particle should remain in place
             else
             {
+                // The particle is in a stable position, so it doesn't move
                 return;
             }
         }
-
-        private void MakeWetSand(Particle[,] grid)
-        {
-            // Delete current SandParticle
-            grid[X, Y] = null;
-
-            // Delete the below WaterParticle
-            grid[X, Y + 1] = null;
-
-            // Create a new WetSandParticle
-            grid[X, Y] = new WetSandParticle(X, Y);
-        }
-
-        private void MoveDown(Particle[,] grid, int newX, int newY)
-        {
-            grid[newX, newY] = this;
-            grid[X, Y] = null;
-            X = newX;
-            Y = newY;
-        }
-
-        private void MoveDownRight(Particle[,] grid)
-        {
-            grid[X, Y] = null;
-            grid[X + 1, Y + 1] = this;
-            X++;
-            Y++;
-        }
-
-        private void MoveDownLeft(Particle[,] grid)
-        {
-            grid[X, Y] = null;
-            grid[X - 1, Y + 1] = this;
-            X--;
-            Y++;
-        }
     }
 }
+
+
+
+
+
+            // If the space below is occupied, and the left side is occupied, move right
+/*             else if (particleLeft != null && particleRight == null)
+            {
+                // Move right
+                grid[X + 1, Y] = this;
+                grid[X, Y] = null;
+                X++;
+            } */
+
+            // If the space below is occupied, and the right side is occupied, move left
+/*             else if (particleRight != null && particleLeft == null)
+            {
+                // Move left
+                grid[X - 1, Y] = this;
+                grid[X, Y] = null;
+                X--;
+            } */

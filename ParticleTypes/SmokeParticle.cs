@@ -71,6 +71,6 @@ namespace FallingSand.ParticleTypes
 
             Velocity *= 0.999f;
         }
-
+        public override void MoveSelf(Particle[,] grid, int newX, int newY) { return; }
     }
 }

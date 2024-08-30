@@ -12,7 +12,7 @@ namespace FallingSand.ParticleTypes
             isCold = true;
         }
 
-            public override void Update(float gravity, Particle[,] grid)
+        public override void Update(float gravity, Particle[,] grid)
         {
             // Ensure the cooler particle stays in place
             if (grid[X, Y] != this)
@@ -20,5 +20,6 @@ namespace FallingSand.ParticleTypes
                 grid[X, Y] = this;
             }
         }
+        public override void MoveSelf(Particle[,] grid, int newX, int newY) { return; }
     }
 }

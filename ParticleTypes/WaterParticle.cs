@@ -1,5 +1,6 @@
 using Microsoft.Xna.Framework;
 using System;
+using System.Reflection.Metadata.Ecma335;
 
 namespace FallingSand.ParticleTypes
 {
@@ -7,7 +8,7 @@ namespace FallingSand.ParticleTypes
     {
         public WaterParticle(int x, int y) : base(x, y)
         {
-            Velocity = 0.1f;
+            Velocity = 10.0f;
         }
 
         public override void Update(float gravity, Particle[,] grid)
@@ -18,107 +19,167 @@ namespace FallingSand.ParticleTypes
             if (newY >= Game1.gridHeight)
                 newY = Game1.gridHeight - 1;
 
-            // Check all surrounding spaces for particle.isHot == true, and convert water to smoke if so
-            if (HeatDetected(grid))
-            {
-                EmitVapor(grid);
-                return; // Exit early since the water particle is now smoke
-            }
-
-            // Handle interactions with particles below
             if (newY < Game1.gridHeight)
             {
-                HandleVerticalMovement(grid, newY);
-
-                // Handle lateral sliding
-                HandleLateralMovement(grid);
+                MoveSelf(grid, X, Y + 1);
             }
         }
-
-        private void HandleVerticalMovement(Particle[,] grid, int newY)
+        public override void MoveSelf(Particle[,] grid, int newX, int newY)
         {
-            Particle belowParticle = grid[X, newY];
-
-            if (belowParticle == null)
+            // Boundary check to ensure we're not going out of grid bounds
+            if (newX < 0 || newX >= grid.GetLength(0) || newY < 0 || newY >= grid.GetLength(1))
             {
-                MoveParticle(grid, X, newY);
+                return;
             }
-            else if (belowParticle is SandParticle)
-            {
-                grid[X, newY] = new WetSandParticle(X, newY);
-                grid[X, Y] = null;
-            }
-            else if (belowParticle is FireParticle)
-            {
-                EmitVapor(grid);
-            }
-            else if (belowParticle is LavaParticle)
-            {
-                grid[X, newY] = new StoneParticle(X, newY);
-                EmitVapor(grid);
-            }
-        }
 
-        private void HandleLateralMovement(Particle[,] grid)
-        {
-            Random rand = new Random();
-            int direction = rand.Next(0, 2) * 2 - 1;
-
-            // Check if the water can slide diagonally down-left or down-right
-            if (X + direction >= 0 && X + direction < Game1.gridWidth && Y + 1 < Game1.gridHeight)
-            {
-                Particle diagonalParticle = grid[X + direction, Y + 1];
-                Particle sideParticle = grid[X + direction, Y];
-
-                if (diagonalParticle == null)
-                {
-                    MoveParticle(grid, X + direction, Y + 1);
-                }
-                else if (diagonalParticle is SandParticle)
-                {
-                    grid[X + direction, Y + 1] = new WetSandParticle(X + direction, Y + 1);
-                    grid[X, Y] = null;
-                }
-                else if (diagonalParticle is FireParticle)
-                {
-                    EmitVapor(grid);
-                    grid[X + direction, Y + 1] = null; // Remove the fire particle
-                }
-                else if (sideParticle == null)
-                {
-                    MoveParticle(grid, X + direction, Y);
-                }
-            }
-        }
-
-        // Check if there is a FireParticle Left, Right, Above, or Below
-        private bool HeatDetected(Particle[,] grid)
-        {
+            // [left, right, above, below]
             Particle[] particlesNear = GetSurroundingParticles(grid);
 
-            foreach (Particle particle in particlesNear)
+            Particle particleLeft = particlesNear[0];
+            Particle particleRight = particlesNear[1];
+            Particle particleBelow = particlesNear[3];
+            Particle particleLowerleft = particlesNear[4];
+            Particle particleLowerRight = particlesNear[5];
+
+            // Check the space directly below
+            if (particleBelow == null && Y + 1 < grid.GetLength(1))
             {
-                if (particle != null && particle.isHot)
-                {
-                    return true;
-                }
+                MoveDown(grid, X, Y + 1);
             }
+
+            // Check if the particle can move diagonally down-left
+            // If empty space left, and empty space diagonally left
+            else if (LeftInbounds(grid) && DownInbounds(grid) && particleLowerleft == null)
+            {
+                MoveDownLeft(grid);
+            }
+
+            // Check if the particle can move diagonally down-right
+            // If empty space right, and empty space diagonally right
+            else if (RightInbounds(grid) && DownInbounds(grid) && particleLowerRight == null)
+            {
+                MoveDownRight(grid);
+            }
+
+            // Check if it can move right
+            else if (particleRight == null && RightInbounds(grid))
+            {
+                MoveRight(grid);
+            }
+
+            // Check if it can move left
+            else if (particleLeft == null && LeftInbounds(grid))
+            {
+                MoveLeft(grid);
+            }
+
+            // If both left and right are free, choose a random direction
+            else if (particleLeft == null && particleRight == null)
+            {
+                Random rand = new Random();
+                int randomNumber = rand.Next(1, 11);
+
+                if (randomNumber >= 6 && X + 1 < grid.GetLength(0)) { MoveRight(grid); }
+                else if (X - 1 >= 0) { MoveLeft(grid); }
+            }
+
+            // Otherwise, the particle should remain in place
+            else
+            {
+                return;
+            }
+        }
+
+        // Checks if the cell underneath it is inbounds
+        private bool DownInbounds(Particle[,] grid)
+        {
+            if (Y + 1 < grid.GetLength(1)) { return true; }
             return false;
         }
 
-        // Move the particle to a new location
-        private void MoveParticle(Particle[,] grid, int newX, int newY)
+        // Checks if the cell right of it is inbounds
+        private bool RightInbounds(Particle[,] grid)
         {
+            if (X + 1 < grid.GetLength(0)) { return true; }
+            return false;
+        }
+
+        // Checks if the cell left of it is inbounds
+        private bool LeftInbounds(Particle[,] grid)
+        {
+            if (X - 1 >= 0) { return true; }
+            return false;
+        }
+
+        // Moves one cell down
+        private void MoveDown(Particle[,] grid, int newX, int newY)
+        {
+            if (newX >= 0 && newX < grid.GetLength(0) && newY >= 0 && newY < grid.GetLength(1))
+            {
+                grid[newX, newY] = this;
+                grid[X, Y] = null;
+                X = newX;
+                Y = newY;
+            }
+        }
+
+        // Moves one cell down, one cell right
+        private void MoveDownRight(Particle[,] grid)
+        {
+            if (X + 1 < grid.GetLength(0) && Y + 1 < grid.GetLength(1))
+            {
+                grid[X, Y] = null;
+                grid[X + 1, Y + 1] = this;
+                X++;
+                Y++;
+            }
+        }
+
+        // Moves one cell right
+        private void MoveRight(Particle[,] grid)
+        {
+            if (X + 1 < grid.GetLength(0))
+            {
+                grid[X, Y] = null;
+                grid[X + 1, Y] = this;
+                X++;
+            }
+        }
+
+        // Moves on cell down, one cell left
+        private void MoveDownLeft(Particle[,] grid)
+        {
+            if (X - 1 >= 0 && Y + 1 < grid.GetLength(1))
+            {
+                grid[X, Y] = null;
+                grid[X - 1, Y + 1] = this;
+                X--;
+                Y++;
+            }
+        }
+
+        // Moves one cell left
+        private void MoveLeft(Particle[,] grid)
+        {
+            if (X - 1 >= 0)
+            {
+                grid[X, Y] = null;
+                grid[X - 1, Y] = this;
+                X--;
+            }
+        }
+
+        // Moves one cell right, pause, moves one cell down
+        private void SecondMoveDownRight(Particle[,] grid, int newX, int newY)
+        {
+            grid[newX, newY] = this;
             grid[X, Y] = null;
             X = newX;
             Y = newY;
-            grid[X, Y] = this;
-        }
 
-        // Turn WaterParticle into VaporParticle
-        private void EmitVapor(Particle[,] grid)
-        {
-            grid[X, Y] = new VaporParticle(X, Y);
+            grid[X, Y] = null;
+            grid[X + 1, Y] = this;
+            X++;
         }
     }
 }
