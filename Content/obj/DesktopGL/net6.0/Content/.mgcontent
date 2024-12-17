@@ -4,7 +4,7 @@
   <Platform>DesktopGL</Platform>
   <Config />
   <SourceFiles>
-    <File>c:/Users/dange/projects/FallingSand/FallingSand/Content/DefaultFont.spritefont</File>
+    <File>C:/Users/dange/projects/FallingSand/FallingSand/Content/DefaultFont.spritefont</File>
   </SourceFiles>
   <DestFiles>
     <File xsi:nil="true" />

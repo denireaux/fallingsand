@@ -127,5 +127,7 @@ namespace FallingSand.ParticleTypes
         {
             grid[X, Y] = new VaporParticle(X, Y);
         }
+
+        public override void MoveSelf(Particle[,] grid, int newX, int newY) {}
     }
 }

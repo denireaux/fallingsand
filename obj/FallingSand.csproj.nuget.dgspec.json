@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "c:\\Users\\dange\\projects\\FallingSand\\FallingSand\\FallingSand.csproj": {}
+    "C:\\Users\\dange\\projects\\FallingSand\\FallingSand\\FallingSand.csproj": {}
   },
   "projects": {
-    "c:\\Users\\dange\\projects\\FallingSand\\FallingSand\\FallingSand.csproj": {
+    "C:\\Users\\dange\\projects\\FallingSand\\FallingSand\\FallingSand.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "c:\\Users\\dange\\projects\\FallingSand\\FallingSand\\FallingSand.csproj",
+        "projectUniqueName": "C:\\Users\\dange\\projects\\FallingSand\\FallingSand\\FallingSand.csproj",
         "projectName": "FallingSand",
-        "projectPath": "c:\\Users\\dange\\projects\\FallingSand\\FallingSand\\FallingSand.csproj",
+        "projectPath": "C:\\Users\\dange\\projects\\FallingSand\\FallingSand\\FallingSand.csproj",
         "packagesPath": "C:\\Users\\dange\\.nuget\\packages\\",
-        "outputPath": "c:\\Users\\dange\\projects\\FallingSand\\FallingSand\\obj\\",
+        "outputPath": "C:\\Users\\dange\\projects\\FallingSand\\FallingSand\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\dange\\AppData\\Roaming\\NuGet\\NuGet.Config"

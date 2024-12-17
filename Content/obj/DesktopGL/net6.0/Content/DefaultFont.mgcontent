@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PipelineBuildEvent xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <SourceFile>c:/Users/dange/projects/FallingSand/FallingSand/Content/DefaultFont.spritefont</SourceFile>
+  <SourceFile>C:/Users/dange/projects/FallingSand/FallingSand/Content/DefaultFont.spritefont</SourceFile>
   <SourceTime>2024-08-04T14:14:50.7596655-06:00</SourceTime>
-  <DestFile>c:/Users/dange/projects/FallingSand/FallingSand/Content/bin/DesktopGL/Content/DefaultFont.xnb</DestFile>
-  <DestTime>2024-12-16T23:27:29.4037466-07:00</DestTime>
+  <DestFile>C:/Users/dange/projects/FallingSand/FallingSand/Content/bin/DesktopGL/Content/DefaultFont.xnb</DestFile>
+  <DestTime>2024-12-16T23:37:59.4919647-07:00</DestTime>
   <Importer>FontDescriptionImporter</Importer>
   <ImporterTime>2022-07-26T05:44:56-06:00</ImporterTime>
   <Processor>LocalizedFontProcessor</Processor>

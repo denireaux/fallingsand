@@ -85,5 +85,7 @@ namespace FallingSand.ParticleTypes
 
             return;
         }
+
+        public override void MoveSelf(Particle[,] grid, int newX, int newY) {}
     }
 }

@@ -74,5 +74,6 @@ namespace FallingSand.ParticleTypes
             // Slightly reduce the velocity to slow down over time
             Velocity *= 0.999f;
         }
+        public override void MoveSelf(Particle[,] grid, int newX, int newY) {}
     }
 }

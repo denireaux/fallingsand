@@ -12,7 +12,7 @@ namespace FallingSand.ParticleTypes
 
         public override void Update(float gravity, Particle[,] grid)
         {
-            Velocity += gravity;
+            Velocity += gravity * 1.0f;
             int newY = (int)(Y + Velocity);
 
             if (newY >= Game1.gridHeight)
@@ -20,43 +20,85 @@ namespace FallingSand.ParticleTypes
 
             if (newY < Game1.gridHeight)
             {
-                if (grid[X, newY] == null)
-                {
-                    grid[X, Y] = null;
-                    Y = newY;
-                    grid[X, Y] = this;
-                }
-                else if (grid[X, newY] is WaterParticle)
-                {
-                    // Transform into WetSandParticle when it comes into contact with water
-                    grid[X, Y] = new WetSandParticle(X, Y);
-                }
-                else
-                {
-                    // Sliding and other behaviors for sand
-                    Random rand = new Random();
-                    int direction = rand.Next(0, 2) * 2 - 1;
-
-                    if (X + direction >= 0 && X + direction < Game1.gridWidth && Y + 1 < Game1.gridHeight)
-                    {
-                        if (grid[X + direction, Y + 1] == null || grid[X + direction, Y + 1] is WaterParticle)
-                        {
-                            if (grid[X + direction, Y + 1] is WaterParticle)
-                            {
-                                grid[X, Y] = new WetSandParticle(X, Y);
-                            }
-                            else
-                            {
-                                grid[X, Y] = null;
-                            }
-
-                            X += direction;
-                            Y += 1;
-                            grid[X, Y] = this;
-                        }
-                    }
-                }
+                MoveSelf(grid, X, Y + 1);
             }
+        }
+
+        public override void MoveSelf(Particle[,] grid, int newX, int newY)
+        {
+            // Boundary check to ensure we're not going out of grid bounds
+            if (newX < 0 || newX >= grid.GetLength(0) || newY < 0 || newY >= grid.GetLength(1))
+            {
+                return;
+            }
+
+            // Take our particles nearby [left, right, above, below]
+            Particle[] particlesNear = GetSurroundingParticles(grid);
+
+            // Isolate our left, right, and below
+            Particle particleLeft = particlesNear[0];
+            Particle particleRight = particlesNear[1];
+            Particle particleBelow = particlesNear[3];
+
+            // Check the space directly below
+            if (particleBelow == null)
+            {
+                MoveDown(grid, X, Y + 1);
+            }
+
+            else if (particleBelow is WaterParticle)
+            {
+                MakeWetSand(grid);
+            }
+
+            // Check if the particle can move diagonally down-right
+            else if (particleRight == null && grid[X + 1, Y + 1] == null)
+            {
+                MoveDownRight(grid);
+            }
+
+            // Check if the particle can move diagonally down-left
+            else if (particleLeft == null && grid[X - 1, Y + 1] == null)
+            {
+                MoveDownLeft(grid);
+            }
+
+            // Otherwise, the particle should remain in place
+            else
+            {
+                return;
+            }
+        }
+
+        private void MakeWetSand(Particle[,] grid)
+        {
+            // Create a new WetSandParticle
+            grid[X, Y] = null;
+            grid[X, Y] = new WetSandParticle(X, Y);
+        }
+
+        private void MoveDown(Particle[,] grid, int newX, int newY)
+        {
+            grid[newX, newY] = this;
+            grid[X, Y] = null;
+            X = newX;
+            Y = newY;
+        }
+
+        private void MoveDownRight(Particle[,] grid)
+        {
+            grid[X, Y] = null;
+            grid[X + 1, Y + 1] = this;
+            X++;
+            Y++;
+        }
+
+        private void MoveDownLeft(Particle[,] grid)
+        {
+            grid[X, Y] = null;
+            grid[X - 1, Y + 1] = this;
+            X--;
+            Y++;
         }
     }
 }
