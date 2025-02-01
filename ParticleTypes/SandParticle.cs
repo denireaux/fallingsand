@@ -41,33 +41,18 @@ namespace FallingSand.ParticleTypes
             Particle particleBelow = particlesNear[3];
 
             // Check the space directly below
-            if (particleBelow == null)
-            {
-                MoveDown(grid, X, Y + 1);
-            }
+            if (particleBelow == null) { MoveDown(grid, X, Y + 1); }
 
-            else if (particleBelow is WaterParticle)
-            {
-                MakeWetSand(grid);
-            }
+            /* else if (particleBelow is WaterParticle) { MakeWetSand(grid); } */
 
             // Check if the particle can move diagonally down-right
-            else if (particleRight == null && grid[X + 1, Y + 1] == null)
-            {
-                MoveDownRight(grid);
-            }
+            else if (particleRight == null && grid[X + 1, Y + 1] == null){ MoveDownRight(grid); }
 
             // Check if the particle can move diagonally down-left
-            else if (particleLeft == null && grid[X - 1, Y + 1] == null)
-            {
-                MoveDownLeft(grid);
-            }
+            else if (particleLeft == null && grid[X - 1, Y + 1] == null) { MoveDownLeft(grid); }
 
             // Otherwise, the particle should remain in place
-            else
-            {
-                return;
-            }
+            else { return; }
         }
 
         private void MakeWetSand(Particle[,] grid)
