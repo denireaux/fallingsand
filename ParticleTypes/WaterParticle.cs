@@ -128,21 +128,21 @@ namespace FallingSand.ParticleTypes
             Particle particleRight = particlesNear[1];
             Particle particleBelow = particlesNear[3];
 
-            int RandomNumber = WaterParticle.GetRandomNumber();
+            bool ShouldMoveLeft = WaterParticle.GenerateBoolean();
 
             // default behavior
             if (particleBelow == null) { MoveDown(grid, X, Y + 1); }
+
+            else if (particleLeft == null && X - 1 >= 0 && grid[X - 1, Y + 1] == null && ShouldMoveLeft) 
+            { 
+                MoveDown(grid, X, Y + 1);
+                MoveLeft(grid);
+            }
 
             else if (particleRight == null && X + 1 < Game1.gridWidth && grid[X + 1, Y + 1] == null) 
             { 
                 MoveDown(grid, X, Y + 1);
                 MoveRight(grid);
-            }
-
-            else if (particleLeft == null && X - 1 >= 0 && grid[X - 1, Y + 1] == null) 
-            { 
-                MoveDown(grid, X, Y + 1);
-                MoveLeft(grid);
             }
 
             else if (particleBelow is WaterParticle && particleLeft == null) 
@@ -218,12 +218,13 @@ namespace FallingSand.ParticleTypes
             }
         }
 
-        private static int GetRandomNumber() 
+        private static bool GenerateBoolean() 
         {
             var random = new Random();
             int randomNumber = random.Next(10);
 
-            return randomNumber;
+            if (randomNumber <= 5) { return true; }
+            return false;
         }
     }
 }
